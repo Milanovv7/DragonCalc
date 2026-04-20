@@ -1,0 +1,8 @@
+{
+    "display": "standalone",
+    "display_override": ["window-controls-overlay"],
+    "prefer_related_applications": false,
+    "shortcuts": [],
+    "name": "DragonCalc",
+    "icons": [{ "src": "icon.png", "sizes": "192x192" }]
+  }
