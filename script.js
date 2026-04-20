@@ -9,11 +9,20 @@ menuToggle.addEventListener('click', (e) => {
     sideMenu.classList.toggle('active');
 });
 
-// Close menu when clicking anywhere else
 document.addEventListener('click', (e) => {
     if (!sideMenu.contains(e.target) && sideMenu.classList.contains('active')) {
         sideMenu.classList.remove('active');
     }
+});
+
+// NEW: Mode Switching Logic
+const menuItems = document.querySelectorAll('.menu-item');
+menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+        const mode = item.innerText;
+        alert("DragonOS " + mode + " Mode: This feature is being calibrated for the next build.");
+        sideMenu.classList.remove('active'); // Close menu after clicking
+    });
 });
 
 // Calculator Functions
@@ -39,14 +48,10 @@ function deleteLast() {
 
 function calculate() {
     try {
-        // We replace the visible '×' with '*' for math logic
         let result = eval(display.value.replace(/×/g, '*'));
-        
-        // Handle long decimals
         if (result.toString().includes('.')) {
             result = parseFloat(result.toFixed(8));
         }
-        
         display.value = result;
     } catch (error) {
         display.value = "Error";
@@ -54,7 +59,6 @@ function calculate() {
     }
 }
 
-// About Section
 aboutBtn.addEventListener('click', () => {
     alert("© 2026 DragonOS Calculator v1.0");
 });
