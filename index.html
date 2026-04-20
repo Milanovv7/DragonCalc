@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DragonCalc</title>
+    <link rel="icon" type="image/png" href="IMG_5182.PNG">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,19 +21,22 @@
         </div>
 
         <div class="top-bar">
-            <div class="menu-icon" id="menuToggle">☰</div>
+            <div class="top-row">
+                <div class="menu-icon" id="menuToggle">☰</div>
+                <div id="modeIndicator">STANDARD</div>
+            </div>
             <input type="text" id="display" readonly value="0">
         </div>
 
-        <div class="scientific-grid" id="scientificGrid">
+        <div class="extra-grid scientific-grid">
             <button class="btn sci" onclick="mathFunction('sin')">sin</button>
             <button class="btn sci" onclick="mathFunction('cos')">cos</button>
-            <button class="btn sci" onclick="mathFunction('tan')">tan</button>
             <button class="btn sci" onclick="mathFunction('sqrt')">√</button>
-            <button class="btn sci" onclick="appendToDisplay('**2')">x²</button>
             <button class="btn sci" onclick="mathFunction('log')">log</button>
-            <button class="btn sci" onclick="appendToDisplay('Math.PI')">π</button>
-            <button class="btn sci" onclick="appendToDisplay('Math.E')">e</button>
+        </div>
+
+        <div class="extra-grid logic-grid">
+            <button class="btn logic-btn" id="logicAction" onclick="runLogic()">CONVERT</button>
         </div>
 
         <div class="button-grid">
@@ -41,23 +45,22 @@
             <button class="btn action" onclick="appendToDisplay('*')">×</button>
             <button class="btn action" onclick="deleteLast()">DEL</button>
             
-            <button class="btn" onclick="appendToDisplay('7')">7</button>
-            <button class="btn" onclick="appendToDisplay('8')">8</button>
-            <button class="btn" onclick="appendToDisplay('9')">9</button>
+            <button class="btn">7</button> <button class="btn">8</button>
+            <button class="btn">9</button>
             <button class="btn action" onclick="appendToDisplay('-')">-</button>
             
-            <button class="btn" onclick="appendToDisplay('4')">4</button>
-            <button class="btn" onclick="appendToDisplay('5')">5</button>
-            <button class="btn" onclick="appendToDisplay('6')">6</button>
+            <button class="btn">4</button>
+            <button class="btn">5</button>
+            <button class="btn">6</button>
             <button class="btn action" onclick="appendToDisplay('+')">+</button>
             
-            <button class="btn" onclick="appendToDisplay('1')">1</button>
-            <button class="btn" onclick="appendToDisplay('2')">2</button>
-            <button class="btn" onclick="appendToDisplay('3')">3</button>
+            <button class="btn">1</button>
+            <button class="btn">2</button>
+            <button class="btn">3</button>
             <button class="btn blue-main" onclick="calculate()">=</button>
             
             <button class="btn zero" onclick="appendToDisplay('0')">0</button>
-            <button class="btn" onclick="appendToDisplay('.')">.</button>
+            <button class="btn">.</button>
         </div>
     </div>
     <script src="script.js"></script>
