@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DragonCalc</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="IMG_5182.PNG">
 </head>
 <body>
-    <div class="calculator-container">
+    <div class="calculator-container" id="calcContainer">
         <div id="sideMenu" class="side-menu">
             <div class="menu-content">
                 <div class="menu-header">DragonOS Modes</div>
-                <button class="menu-item">Scientifistic</button>
+                <button class="menu-item" onclick="switchMode('standard')">Standard</button>
+                <button class="menu-item" onclick="switchMode('scientific')">Scientifistic</button>
                 <button class="menu-item">Programmer</button>
                 <button class="menu-item">Currency</button>
-                <button class="menu-item">Speed</button>
-                <button class="menu-item">Weight</button>
                 <div class="menu-footer" id="aboutBtn">About Calculator</div>
             </div>
         </div>
@@ -24,6 +22,17 @@
         <div class="top-bar">
             <div class="menu-icon" id="menuToggle">☰</div>
             <input type="text" id="display" readonly value="0">
+        </div>
+
+        <div class="scientific-grid" id="scientificGrid">
+            <button class="btn sci" onclick="mathFunction('sin')">sin</button>
+            <button class="btn sci" onclick="mathFunction('cos')">cos</button>
+            <button class="btn sci" onclick="mathFunction('tan')">tan</button>
+            <button class="btn sci" onclick="mathFunction('sqrt')">√</button>
+            <button class="btn sci" onclick="appendToDisplay('**2')">x²</button>
+            <button class="btn sci" onclick="mathFunction('log')">log</button>
+            <button class="btn sci" onclick="appendToDisplay('Math.PI')">π</button>
+            <button class="btn sci" onclick="appendToDisplay('Math.E')">e</button>
         </div>
 
         <div class="button-grid">
