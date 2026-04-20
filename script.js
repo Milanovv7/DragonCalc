@@ -1,35 +1,39 @@
 const display = document.getElementById('display');
 const sideMenu = document.getElementById('sideMenu');
 const calcContainer = document.getElementById('calcContainer');
-const modeIndicator = document.getElementById('modeIndicator');
 const logicAction = document.getElementById('logicAction');
 
-// Menu Toggle
 document.getElementById('menuToggle').onclick = (e) => {
     e.stopPropagation();
-    sideMenu.classList.toggle('active');
+    sideMenu.classList.add('active');
 };
 
-// Mode Switcher - Closes menu and swaps UI
 function switchMode(mode) {
     calcContainer.className = 'calculator-container mode-' + mode;
-    modeIndicator.innerText = (mode === 'standard') ? "DRAGONOS" : mode.toUpperCase();
-    
     if(mode === 'programmer') logicAction.innerText = "CONVERT TO BINARY";
-    if(mode === 'currency') logicAction.innerText = "USD TO EUR";
-    
+    if(mode === 'currency') logicAction.innerText = "USD TO MKD";
     sideMenu.classList.remove('active');
 }
 
-// Logic for conversions
+// Global click listener to close menu if clicking anywhere else
+document.addEventListener('click', (e) => {
+    if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
+        sideMenu.classList.remove('active');
+    }
+});
+
 function runLogic() {
     let val = parseFloat(display.value);
-    if (calcContainer.classList.contains('mode-programmer')) display.value = (val >>> 0).toString(2);
-    if (calcContainer.classList.contains('mode-currency')) display.value = (val * 0.92).toFixed(2);
+    if (calcContainer.classList.contains('mode-programmer')) {
+        display.value = (val >>> 0).toString(2);
+    }
+    if (calcContainer.classList.contains('mode-currency')) {
+        display.value = (val * 56.45).toFixed(2) + " MKD";
+    }
 }
 
 function appendToDisplay(input) {
-    if (display.value === "0") display.value = input;
+    if (display.value === "0" || display.value.includes("MKD")) display.value = input;
     else display.value += input;
 }
 
