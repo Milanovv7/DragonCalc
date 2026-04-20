@@ -6,40 +6,34 @@ const logicAction = document.getElementById('logicAction');
 
 let currentMode = 'standard';
 
-// Menu Toggle
 document.getElementById('menuToggle').onclick = (e) => {
     e.stopPropagation();
     sideMenu.classList.toggle('active');
 };
 
-// Mode Switcher
 function switchMode(mode) {
     currentMode = mode;
+    // Clean up container classes
     calcContainer.className = 'calculator-container mode-' + mode;
-    modeIndicator.innerText = mode.toUpperCase();
-    sideMenu.classList.remove('active');
+    
+    // Update labels
+    if (mode === 'standard') {
+        modeIndicator.innerText = "";
+    } else {
+        modeIndicator.innerText = mode.toUpperCase();
+    }
     
     if(mode === 'programmer') logicAction.innerText = "CONVERT TO BINARY";
     if(mode === 'currency') logicAction.innerText = "USD TO EUR";
+    
+    sideMenu.classList.remove('active');
 }
 
-// Logic for Special Modes
 function runLogic() {
     let val = parseFloat(display.value);
-    if (currentMode === 'programmer') {
-        display.value = (val >>> 0).toString(2); // Binary conversion
-    }
-    if (currentMode === 'currency') {
-        display.value = (val * 0.92).toFixed(2); // Simple conversion
-    }
+    if (currentMode === 'programmer') display.value = (val >>> 0).toString(2);
+    if (currentMode === 'currency') display.value = (val * 0.92).toFixed(2);
 }
-
-// Standard Button Setup
-document.querySelectorAll('.btn').forEach(button => {
-    if(!button.onclick && button.innerText.match(/[0-9.]/)) {
-        button.onclick = () => appendToDisplay(button.innerText);
-    }
-});
 
 function appendToDisplay(input) {
     if (display.value === "0") display.value = input;
