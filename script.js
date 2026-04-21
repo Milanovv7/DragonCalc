@@ -1,28 +1,21 @@
 const display = document.getElementById('display');
 const sideMenu = document.getElementById('sideMenu');
 const calcContainer = document.getElementById('calcContainer');
-const logicAction = document.getElementById('logicAction');
 const currencyBtn = document.getElementById('currencySelect');
 
 let selectedCurrency = 'MKD';
 
+// Open Menu
 document.getElementById('menuToggle').onclick = (e) => {
     e.stopPropagation();
     sideMenu.classList.add('active');
+    calcContainer.classList.add('menu-active');
 };
 
+// Switch Mode Logic
 function switchMode(mode) {
     calcContainer.className = 'calculator-container mode-' + mode;
-    if(mode === 'programmer') {
-        document.getElementById('utilRow').style.gridTemplateColumns = "1fr";
-        currencyBtn.style.display = "none";
-        logicAction.innerText = "CONVERT TO BINARY";
-    } else if (mode === 'currency') {
-        document.getElementById('utilRow').style.gridTemplateColumns = "1fr 1fr";
-        currencyBtn.style.display = "block";
-        logicAction.innerText = "CONVERT";
-    }
-    sideMenu.classList.remove('active');
+    closeMenu();
 }
 
 function toggleCurrencyMenu() {
@@ -32,9 +25,16 @@ function toggleCurrencyMenu() {
     currencyBtn.innerText = "TO: " + selectedCurrency;
 }
 
+// Global Close Function
+function closeMenu() {
+    sideMenu.classList.remove('active');
+    calcContainer.classList.remove('menu-active');
+}
+
+// Close menu when clicking overlay or buttons
 document.addEventListener('click', (e) => {
     if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
-        sideMenu.classList.remove('active');
+        closeMenu();
     }
 });
 
@@ -44,15 +44,17 @@ function runLogic() {
         display.value = (val >>> 0).toString(2);
     }
     if (calcContainer.classList.contains('mode-currency')) {
-        // Rates relative to 1 USD (April 2026 Estimates)
         const rates = { 'MKD': 56.45, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79 };
         display.value = (val * rates[selectedCurrency]).toFixed(2) + " " + selectedCurrency;
     }
 }
 
 function appendToDisplay(input) {
-    if (display.value === "0" || isNaN(display.value.charAt(0))) display.value = input;
-    else display.value += input;
+    if (display.value === "0" || isNaN(display.value.charAt(0)) && display.value !== "-") {
+        display.value = input;
+    } else {
+        display.value += input;
+    }
 }
 
 function clearDisplay() { display.value = "0"; }
@@ -75,5 +77,5 @@ function mathFunction(type) {
 
 document.getElementById('aboutBtn').onclick = () => {
     alert("© 2026 DragonOS Calculator v1.0");
-    sideMenu.classList.remove('active');
+    closeMenu();
 };
