@@ -1,60 +1,95 @@
-body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; font-family: sans-serif; overflow: hidden; }
+const display = document.getElementById('display');
+const sideMenu = document.getElementById('sideMenu');
+const calcContainer = document.getElementById('calcContainer');
+const currencyBtn = document.getElementById('currencySelect');
 
-.calculator-container { 
-    display: flex; 
-    flex-direction: column; 
-    height: 100vh; 
-    width: 100vw; 
-    max-width: 500px; 
-    margin: 0 auto; 
-    background: #000; 
-    position: relative; 
-    overflow: hidden; /* Prevents sidebar from showing outside bounds */
+let selectedCurrency = 'MKD';
+
+// 1. OPEN MENU
+document.getElementById('menuToggle').onclick = (e) => {
+    e.stopPropagation();
+    sideMenu.classList.add('active');
+    calcContainer.classList.add('menu-active'); // This hides the ☰ icon
+};
+
+// 2. CLOSE MENU FUNCTION
+function closeMenu() {
+    sideMenu.classList.remove('active');
+    calcContainer.classList.remove('menu-active'); // This shows the ☰ icon again
 }
 
-.top-bar { flex: 0 0 160px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: #050505; }
-.header-row { display: flex; justify-content: flex-start; align-items: center; height: 30px; }
-.menu-icon { font-size: 24px; cursor: pointer; color: #0055ff; z-index: 10; }
-
-/* Sidebar - THE FIX */
-.side-menu { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 280px; 
-    height: 100%; 
-    background: #0d0d0d; 
-    z-index: 2000; 
-    border-right: 2px solid #0055ff; 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column;
-    /* This moves it completely off screen regardless of screen size */
-    transform: translateX(-100%); 
-    transition: transform 0.3s ease-in-out;
+// 3. SWITCH MODES
+function switchMode(mode) {
+    // We preserve the mode class but remove the menu-active class
+    calcContainer.className = 'calculator-container mode-' + mode;
+    closeMenu();
 }
 
-/* When active, slide it in */
-.side-menu.active { 
-    transform: translateX(0); 
+// 4. CLICK OUTSIDE TO CLOSE
+document.addEventListener('click', (e) => {
+    if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
+        closeMenu();
+    }
+});
+
+// 5. CURRENCY SELECTION LOGIC
+function toggleCurrencyMenu() {
+    const options = ['MKD', 'USD', 'EUR', 'GBP'];
+    let currentIndex = options.indexOf(selectedCurrency);
+    selectedCurrency = options[(currentIndex + 1) % options.length];
+    currencyBtn.innerText = "TO: " + selectedCurrency;
 }
 
-/* Hide the 3-lines icon ONLY when menu is open */
-.menu-active .menu-icon { 
-    visibility: hidden; 
+// 6. CONVERSION LOGIC
+function runLogic() {
+    let val = parseFloat(display.value);
+    if (isNaN(val)) return;
+
+    if (calcContainer.classList.contains('mode-programmer')) {
+        display.value = (val >>> 0).toString(2);
+    }
+    if (calcContainer.classList.contains('mode-currency')) {
+        const rates = { 'MKD': 56.45, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79 };
+        display.value = (val * rates[selectedCurrency]).toFixed(2) + " " + selectedCurrency;
+    }
 }
 
-/* The rest of your UI stays exactly as you liked it */
-#display { width: 100%; background: transparent; border: none; color: white; font-size: 4rem; text-align: right; outline: none; }
-.extra-row { display: none !important; background: #111; gap: 1px; border-bottom: 2px solid #0055ff; }
-.mode-scientific #sciRow { display: grid !important; grid-template-columns: repeat(4, 1fr); }
-.mode-currency #currencyRow { display: grid !important; grid-template-columns: 1fr 1fr; }
-.mode-programmer #progRow { display: grid !important; grid-template-columns: 1fr; }
+// 7. BASIC CALCULATOR FUNCTIONS
+function appendToDisplay(input) {
+    // If display is 0 or shows a currency result, replace it with the new number
+    if (display.value === "0" || isNaN(display.value.charAt(0)) && display.value !== "-") {
+        display.value = input;
+    } else {
+        display.value += input;
+    }
+}
 
-.btn-sci, .btn-util { background: #0a0a0a; color: #0055ff; border: none; padding: 15px; font-size: 1rem; cursor: pointer; }
-.btn-util { background: #0055ff; color: white; font-weight: bold; font-size: 0.8rem; }
-.button-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #111; }
-.btn { background: #0a0a0a; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: box-shadow 0.3s ease, background 0.3s ease; }
-.btn.action { color: #0055ff; }
-.btn.blue-main { background: #0055ff; }
-.btn:hover { box-shadow: inset 0 0 20px rgba(0, 85, 255, 0.5); background: #111; }
+function clearDisplay() { display.value = "0"; }
+function deleteLast() { display.value = display.value.slice(0, -1) || "0"; }
+
+function calculate() {
+    try { 
+        display.value = eval(display.value.replace(/×/g, '*')); 
+    } catch { 
+        display.value = "Error"; 
+    }
+}
+
+// 8. SCIENTIFISTIC FUNCTIONS
+function mathFunction(type) {
+    try {
+        let val = eval(display.value);
+        if (type === 'sin') display.value = Math.sin(val).toFixed(4);
+        if (type === 'cos') display.value = Math.cos(val).toFixed(4);
+        if (type === 'sqrt') display.value = Math.sqrt(val).toFixed(4);
+        if (type === 'log') display.value = Math.log10(val).toFixed(4);
+    } catch { 
+        display.value = "Error"; 
+    }
+}
+
+// 9. ABOUT BUTTON
+document.getElementById('aboutBtn').onclick = () => {
+    alert("DragonCalc v1.0\nBuilt for DragonOS 2026");
+    closeMenu();
+};
