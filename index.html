@@ -5,12 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DragonCalc</title>
     <link rel="icon" type="image/png" href="IMG_5182.PNG">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="calculator-container" id="calcContainer">
-        <div id="menuOverlay" class="menu-overlay"></div>
+    <style>
+        /* --- CSS STYLES --- */
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; font-family: sans-serif; overflow: hidden; }
+        
+        .calculator-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            width: 100vw; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: #000; 
+            position: relative; 
+            overflow: hidden; 
+        }
 
+        .top-bar { flex: 0 0 160px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: #050505; }
+        .header-row { display: flex; justify-content: flex-start; align-items: center; height: 30px; }
+        .menu-icon { font-size: 24px; cursor: pointer; color: #0055ff; z-index: 10; }
+
+        /* Hide 3-lines menu icon when sidebar is active */
+        .menu-active .menu-icon { visibility: hidden; }
+
+        #display { width: 100%; background: transparent; border: none; color: white; font-size: 4rem; text-align: right; outline: none; }
+
+        /* Extra Mode Rows */
+        .extra-row { display: none !important; background: #111; gap: 1px; border-bottom: 2px solid #0055ff; }
+        .mode-scientific #sciRow { display: grid !important; grid-template-columns: repeat(4, 1fr); }
+        .mode-currency #currencyRow { display: grid !important; grid-template-columns: 1fr 1fr; }
+        .mode-programmer #progRow { display: grid !important; grid-template-columns: 1fr; }
+
+        .btn-sci, .btn-util { background: #0a0a0a; color: #0055ff; border: none; padding: 15px; font-size: 1rem; cursor: pointer; }
+        .btn-util { background: #0055ff; color: white; font-weight: bold; font-size: 0.8rem; }
+
+        /* Main Grid & Animation */
+        .button-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #111; }
+        .btn { background: #0a0a0a; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: box-shadow 0.3s ease, background 0.3s ease; }
+        .btn.action { color: #0055ff; }
+        .btn.blue-main { background: #0055ff; }
+        .btn:hover { box-shadow: inset 0 0 20px rgba(0, 85, 255, 0.5); background: #111; }
+
+        /* SIDEBAR & OVERLAY */
+        .side-menu { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 280px; 
+            height: 100%; 
+            background: #0d0d0d; 
+            z-index: 2000; 
+            border-right: 2px solid #0055ff; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            transform: translateX(-100%); 
+            transition: transform 0.3s ease-in-out;
+        }
+        .side-menu.active { transform: translateX(0); }
+
+        .menu-header { color: #0055ff; font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
+        .menu-item { background: transparent; color: white; border: none; padding: 15px; text-align: left; width: 100%; cursor: pointer; font-size: 1rem; display: block; outline: none; }
+        .menu-item:hover { background: #111; color: #0055ff; }
+        .menu-footer { margin-top: auto; color: #444; font-size: 0.8rem; cursor: pointer; border-top: 1px solid #222; padding-top: 10px; }
+    </style>
+</head>
+<body class="mode-standard">
+
+    <div class="calculator-container" id="calcContainer">
         <div id="sideMenu" class="side-menu">
             <div class="menu-content">
                 <div class="menu-header">DragonCalc</div>
@@ -66,10 +128,91 @@
             <button class="btn" onclick="appendToDisplay('3')">3</button>
             <button class="btn blue-main" onclick="calculate()">=</button>
             
-            <button class="btn zero" onclick="appendToDisplay('0')">0</button>
+            <button class="btn" style="grid-column: span 2;" onclick="appendToDisplay('0')">0</button>
             <button class="btn" onclick="appendToDisplay('.')">.</button>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+        const display = document.getElementById('display');
+        const sideMenu = document.getElementById('sideMenu');
+        const calcContainer = document.getElementById('calcContainer');
+        const currencyBtn = document.getElementById('currencySelect');
+
+        let selectedCurrency = 'MKD';
+
+        document.getElementById('menuToggle').onclick = (e) => {
+            e.stopPropagation();
+            sideMenu.classList.add('active');
+            calcContainer.classList.add('menu-active');
+        };
+
+        function closeMenu() {
+            sideMenu.classList.remove('active');
+            calcContainer.classList.remove('menu-active');
+        }
+
+        function switchMode(mode) {
+            calcContainer.className = 'calculator-container mode-' + mode;
+            closeMenu();
+        }
+
+        function toggleCurrencyMenu() {
+            const options = ['MKD', 'USD', 'EUR', 'GBP'];
+            let currentIndex = options.indexOf(selectedCurrency);
+            selectedCurrency = options[(currentIndex + 1) % options.length];
+            currencyBtn.innerText = "TO: " + selectedCurrency;
+        }
+
+        document.addEventListener('click', (e) => {
+            if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        function runLogic() {
+            let val = parseFloat(display.value);
+            if (isNaN(val)) return;
+            if (calcContainer.classList.contains('mode-programmer')) {
+                display.value = (val >>> 0).toString(2);
+            }
+            if (calcContainer.classList.contains('mode-currency')) {
+                const rates = { 'MKD': 56.45, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79 };
+                display.value = (val * rates[selectedCurrency]).toFixed(2) + " " + selectedCurrency;
+            }
+        }
+
+        function appendToDisplay(input) {
+            if (display.value === "0" || isNaN(display.value.charAt(0)) && display.value !== "-") {
+                display.value = input;
+            } else {
+                display.value += input;
+            }
+        }
+
+        function clearDisplay() { display.value = "0"; }
+        function deleteLast() { display.value = display.value.slice(0, -1) || "0"; }
+
+        function calculate() {
+            try { display.value = eval(display.value.replace(/×/g, '*')); } 
+            catch { display.value = "Error"; }
+        }
+
+        function mathFunction(type) {
+            try {
+                let val = eval(display.value);
+                if (type === 'sin') display.value = Math.sin(val).toFixed(4);
+                if (type === 'cos') display.value = Math.cos(val).toFixed(4);
+                if (type === 'sqrt') display.value = Math.sqrt(val).toFixed(4);
+                if (type === 'log') display.value = Math.log10(val).toFixed(4);
+            } catch { display.value = "Error"; }
+        }
+
+        document.getElementById('aboutBtn').onclick = () => {
+            alert("DragonCalc v1.0\nBuilt for DragonOS 2026");
+            closeMenu();
+        };
+    </script>
 </body>
 </html>
