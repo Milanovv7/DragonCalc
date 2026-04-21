@@ -9,6 +9,8 @@
 </head>
 <body>
     <div class="calculator-container" id="calcContainer">
+        <div id="menuOverlay" class="menu-overlay"></div>
+
         <div id="sideMenu" class="side-menu">
             <div class="menu-content">
                 <div class="menu-header">DragonCalc</div>
@@ -34,9 +36,13 @@
             <button class="btn-sci" onclick="mathFunction('log')">log</button>
         </div>
 
-        <div class="extra-row" id="utilRow">
-            <button class="btn-util" id="currencySelect" style="background: #111; border-right: 1px solid #0055ff;" onclick="toggleCurrencyMenu()">SELECT: MKD</button>
-            <button class="btn-util" id="logicAction" onclick="runLogic()">CONVERT</button>
+        <div class="extra-row" id="currencyRow">
+            <button class="btn-util" id="currencySelect" style="background: #111; border-right: 1px solid #0055ff;" onclick="toggleCurrencyMenu()">TO: MKD</button>
+            <button class="btn-util" onclick="runLogic()">CONVERT</button>
+        </div>
+
+        <div class="extra-row" id="progRow">
+            <button class="btn-util" onclick="runLogic()">CONVERT TO BINARY</button>
         </div>
 
         <div class="button-grid">
