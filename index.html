@@ -25,7 +25,6 @@
         .header-row { display: flex; justify-content: flex-start; align-items: center; height: 30px; }
         .menu-icon { font-size: 24px; cursor: pointer; color: #0055ff; z-index: 10; }
 
-        /* Hide 3-lines menu icon when sidebar is active */
         .menu-active .menu-icon { visibility: hidden; }
 
         #display { width: 100%; background: transparent; border: none; color: white; font-size: 4rem; text-align: right; outline: none; }
@@ -33,7 +32,6 @@
         /* Extra Mode Rows */
         .extra-row { display: none !important; background: #111; gap: 1px; border-bottom: 2px solid #0055ff; }
         .mode-scientific #sciRow { display: grid !important; grid-template-columns: repeat(4, 1fr); }
-        .mode-currency #currencyRow { display: grid !important; grid-template-columns: 1fr 1fr; }
         .mode-programmer #progRow { display: grid !important; grid-template-columns: 1fr; }
 
         .btn-sci, .btn-util { background: #0a0a0a; color: #0055ff; border: none; padding: 15px; font-size: 1rem; cursor: pointer; }
@@ -79,7 +77,6 @@
                 <button class="menu-item" onclick="switchMode('standard')">Standard</button>
                 <button class="menu-item" onclick="switchMode('scientific')">Scientifistic</button>
                 <button class="menu-item" onclick="switchMode('programmer')">Programmer</button>
-                <button class="menu-item" onclick="switchMode('currency')">Currency</button>
                 <div class="menu-footer" id="aboutBtn">About Calculator</div>
             </div>
         </div>
@@ -96,11 +93,6 @@
             <button class="btn-sci" onclick="mathFunction('cos')">cos</button>
             <button class="btn-sci" onclick="mathFunction('sqrt')">√</button>
             <button class="btn-sci" onclick="mathFunction('log')">log</button>
-        </div>
-
-        <div class="extra-row" id="currencyRow">
-            <button class="btn-util" id="currencySelect" style="background: #111; border-right: 1px solid #0055ff;" onclick="toggleCurrencyMenu()">TO: MKD</button>
-            <button class="btn-util" onclick="runLogic()">CONVERT</button>
         </div>
 
         <div class="extra-row" id="progRow">
@@ -138,9 +130,6 @@
         const display = document.getElementById('display');
         const sideMenu = document.getElementById('sideMenu');
         const calcContainer = document.getElementById('calcContainer');
-        const currencyBtn = document.getElementById('currencySelect');
-
-        let selectedCurrency = 'MKD';
 
         document.getElementById('menuToggle').onclick = (e) => {
             e.stopPropagation();
@@ -158,13 +147,6 @@
             closeMenu();
         }
 
-        function toggleCurrencyMenu() {
-            const options = ['MKD', 'USD', 'EUR', 'GBP'];
-            let currentIndex = options.indexOf(selectedCurrency);
-            selectedCurrency = options[(currentIndex + 1) % options.length];
-            currencyBtn.innerText = "TO: " + selectedCurrency;
-        }
-
         document.addEventListener('click', (e) => {
             if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
                 closeMenu();
@@ -176,10 +158,6 @@
             if (isNaN(val)) return;
             if (calcContainer.classList.contains('mode-programmer')) {
                 display.value = (val >>> 0).toString(2);
-            }
-            if (calcContainer.classList.contains('mode-currency')) {
-                const rates = { 'MKD': 56.45, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79 };
-                display.value = (val * rates[selectedCurrency]).toFixed(2) + " " + selectedCurrency;
             }
         }
 
