@@ -3,194 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DragonCalc</title>
-    <link rel="icon" type="image/png" href="IMG_5182.PNG">
+    <title>Calculator</title>
+    <link rel="icon" type="image/png" href="./IMG_5375.PNG" sizes="any">
+    
     <style>
-        /* --- CSS STYLES --- */
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; font-family: sans-serif; overflow: hidden; }
-        
-        .calculator-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            width: 100vw; 
-            max-width: 500px; 
-            margin: 0 auto; 
-            background: #000; 
-            position: relative; 
-            overflow: hidden; 
+        :root {
+            --bg-color: #001233;
+            --sidebar-bg: rgba(0, 18, 51, 0.6);
+            --btn-bg: rgba(255, 255, 255, 0.05);
+            --btn-border: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --hover-bg: rgba(255, 255, 255, 0.1);
         }
 
-        .top-bar { flex: 0 0 160px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: #050505; }
-        .header-row { display: flex; justify-content: flex-start; align-items: center; height: 30px; }
-        .menu-icon { font-size: 24px; cursor: pointer; color: #0055ff; z-index: 10; }
+        * { box-sizing: border-box; }
 
-        .menu-active .menu-icon { visibility: hidden; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
 
-        #display { width: 100%; background: transparent; border: none; color: white; font-size: 4rem; text-align: right; outline: none; }
-
-        /* Extra Mode Rows */
-        .extra-row { display: none !important; background: #111; gap: 1px; border-bottom: 2px solid #0055ff; }
-        .mode-scientific #sciRow { display: grid !important; grid-template-columns: repeat(4, 1fr); }
-        .mode-programmer #progRow { display: grid !important; grid-template-columns: 1fr; }
-
-        .btn-sci, .btn-util { background: #0a0a0a; color: #0055ff; border: none; padding: 15px; font-size: 1rem; cursor: pointer; }
-        .btn-util { background: #0055ff; color: white; font-weight: bold; font-size: 0.8rem; }
-
-        /* Main Grid & Animation */
-        .button-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #111; }
-        .btn { background: #0a0a0a; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: box-shadow 0.3s ease, background 0.3s ease; }
-        .btn.action { color: #0055ff; }
-        .btn.blue-main { background: #0055ff; }
-        .btn:hover { box-shadow: inset 0 0 20px rgba(0, 85, 255, 0.5); background: #111; }
-
-        /* SIDEBAR & OVERLAY */
-        .side-menu { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 280px; 
-            height: 100%; 
-            background: #0d0d0d; 
-            z-index: 2000; 
-            border-right: 2px solid #0055ff; 
-            padding: 20px; 
-            display: flex; 
+        /* --- HAMBURGER MENU --- */
+        .menu-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
             flex-direction: column;
-            transform: translateX(-100%); 
-            transition: transform 0.3s ease-in-out;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
         }
-        .side-menu.active { transform: translateX(0); }
+        .menu-btn:hover { background: var(--hover-bg); }
+        .menu-btn span { width: 20px; height: 2px; background: white; transition: all 0.2s ease; }
+        
+        .menu-btn:hover span:nth-child(1) { width: 14px; }
+        .menu-btn:hover span:nth-child(2) { width: 24px; }
+        .menu-btn:hover span:nth-child(3) { width: 14px; }
 
-        .menu-header { color: #0055ff; font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
-        .menu-item { background: transparent; color: white; border: none; padding: 15px; text-align: left; width: 100%; cursor: pointer; font-size: 1rem; display: block; outline: none; }
-        .menu-item:hover { background: #111; color: #0055ff; }
-        .menu-footer { margin-top: auto; color: #444; font-size: 0.8rem; cursor: pointer; border-top: 1px solid #222; padding-top: 10px; }
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            padding-top: 65px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-title { padding: 10px 24px; font-weight: 600; font-size: 20px; margin-bottom: 5px; }
+        .sidebar-item { padding: 12px 24px; cursor: pointer; transition: 0.2s; font-size: 15px; }
+        .sidebar-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .sidebar-sep { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 10px 24px; }
+
+        /* --- MAIN APP INTERFACE --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: 60px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .display-container {
+            flex-shrink: 0;
+            text-align: right;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+        #history { font-size: 18px; opacity: 0.6; min-height: 24px; }
+        #display { font-size: 72px; font-weight: 300; margin: 0; overflow: hidden; text-overflow: ellipsis; }
+        #bin-preview { font-size: 14px; opacity: 0.4; font-family: monospace; height: 18px; margin-top: 5px; }
+
+        /* --- FULL SCREEN GRID --- */
+        .mode-container { display: none; flex: 1; flex-direction: column; }
+        .mode-container.active { display: flex; }
+
+        .sci-row { 
+            display: none; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 4px; 
+            margin-bottom: 4px; 
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 4px;
+            flex: 1;
+        }
+
+        .reveal-btn {
+            position: relative;
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 4px;
+            color: white;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: background 0.15s;
+        }
+        
+        .reveal-btn::before {
+            content: '';
+            position: absolute;
+            top: var(--y, -100px);
+            left: var(--x, -100px);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .reveal-btn:hover::before { opacity: 1; }
+        .reveal-btn:active { background: rgba(255, 255, 255, 0.15); }
+
+        .op-btn { background: rgba(255, 255, 255, 0.08); }
+        .eq-btn { background: #005a9e; border: none; }
+        .eq-btn:hover { background: #0067b8; }
+
+        /* --- DATE MODE --- */
+        #mode-date.active { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+        .date-input-group { margin-bottom: 25px; width: 100%; }
+        input[type="date"] { 
+            width: 280px; 
+            padding: 12px; 
+            background: #111; 
+            color: white; 
+            border: 1px solid #333; 
+            border-radius: 4px; 
+            font-family: inherit; 
+            margin-top: 8px;
+        }
+        #dateResult { font-size: 28px; font-weight: 300; margin: 20px 0; }
+        .reset-date-btn { 
+            padding: 10px 25px; 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid var(--btn-border); 
+            color: white; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+
     </style>
 </head>
-<body class="mode-standard">
+<body onclick="closeSidebar()">
 
-    <div class="calculator-container" id="calcContainer">
-        <div id="sideMenu" class="side-menu">
-            <div class="menu-content">
-                <div class="menu-header">DragonCalc</div>
-                <button class="menu-item" onclick="switchMode('standard')">Standard</button>
-                <button class="menu-item" onclick="switchMode('scientific')">Scientifistic</button>
-                <button class="menu-item" onclick="switchMode('programmer')">Programmer</button>
-                <div class="menu-footer" id="aboutBtn">About Calculator</div>
+    <div class="menu-btn" id="menuBtn" onclick="event.stopPropagation(); toggleSidebar()">
+        <span></span><span></span><span></span>
+    </div>
+
+    <div class="sidebar" id="sidebar" onclick="event.stopPropagation()">
+        <div class="sidebar-title">Calculator</div>
+        <div class="sidebar-item" onclick="changeMode('standard')">Standard</div>
+        <div class="sidebar-item" onclick="changeMode('scientific')">Scientific</div>
+        <div class="sidebar-item" onclick="changeMode('programmer')">Programmer</div>
+        <div class="sidebar-item" onclick="changeMode('date')">Date Calculation</div>
+        <div class="sidebar-sep"></div>
+        <div class="sidebar-item" onclick="alert('DragonCalc v1.0 Built for DragonOS 2026.')">About Calculator</div>
+    </div>
+
+    <div class="main-content">
+        <div id="mode-main" class="mode-container active">
+            <div class="display-container">
+                <div id="history"></div>
+                <div id="display">0</div>
+                <div id="bin-preview" style="display: none;"></div>
+            </div>
+
+            <div id="sci-btns" class="sci-row">
+                <div class="reveal-btn op-btn" onclick="sciOp('sin')">sin</div>
+                <div class="reveal-btn op-btn" onclick="sciOp('cos')">cos</div>
+                <div class="reveal-btn op-btn" onclick="sciOp('tan')">tan</div>
+                <div class="reveal-btn op-btn" onclick="sciOp('sqrt')">√</div>
+            </div>
+
+            <div class="calc-grid">
+                <div class="reveal-btn op-btn" onclick="clearCalc()">C</div>
+                <div class="reveal-btn op-btn" onclick="backspace()">⌫</div>
+                <div class="reveal-btn op-btn" onclick="setOp('%')">%</div>
+                <div class="reveal-btn op-btn" onclick="setOp('/')">÷</div>
+
+                <div class="reveal-btn" onclick="inputNum('7')">7</div>
+                <div class="reveal-btn" onclick="inputNum('8')">8</div>
+                <div class="reveal-btn" onclick="inputNum('9')">9</div>
+                <div class="reveal-btn op-btn" onclick="setOp('*')">×</div>
+
+                <div class="reveal-btn" onclick="inputNum('4')">4</div>
+                <div class="reveal-btn" onclick="inputNum('5')">5</div>
+                <div class="reveal-btn" onclick="inputNum('6')">6</div>
+                <div class="reveal-btn op-btn" onclick="setOp('-')">-</div>
+
+                <div class="reveal-btn" onclick="inputNum('1')">1</div>
+                <div class="reveal-btn" onclick="inputNum('2')">2</div>
+                <div class="reveal-btn" onclick="inputNum('3')">3</div>
+                <div class="reveal-btn op-btn" onclick="setOp('+')">+</div>
+
+                <div class="reveal-btn" onclick="toggleNeg()">±</div>
+                <div class="reveal-btn" onclick="inputNum('0')">0</div>
+                <div class="reveal-btn" onclick="inputNum('.')">.</div>
+                <div class="reveal-btn eq-btn" onclick="calculate()">=</div>
             </div>
         </div>
 
-        <div class="top-bar">
-            <div class="header-row">
-                <div class="menu-icon" id="menuToggle">☰</div>
+        <div id="mode-date" class="mode-container">
+            <h2 style="font-weight: 400; margin-bottom: 30px;">Date Calculation</h2>
+            <div class="date-input-group">
+                <label style="font-size: 14px; opacity: 0.7;">From</label><br>
+                <input type="date" id="d1" onchange="calcDateDiff()">
             </div>
-            <input type="text" id="display" readonly value="0">
-        </div>
-
-        <div class="extra-row" id="sciRow">
-            <button class="btn-sci" onclick="mathFunction('sin')">sin</button>
-            <button class="btn-sci" onclick="mathFunction('cos')">cos</button>
-            <button class="btn-sci" onclick="mathFunction('sqrt')">√</button>
-            <button class="btn-sci" onclick="mathFunction('log')">log</button>
-        </div>
-
-        <div class="extra-row" id="progRow">
-            <button class="btn-util" onclick="runLogic()">CONVERT TO BINARY</button>
-        </div>
-
-        <div class="button-grid">
-            <button class="btn action" onclick="clearDisplay()">AC</button>
-            <button class="btn action" onclick="appendToDisplay('/')">/</button>
-            <button class="btn action" onclick="appendToDisplay('*')">×</button>
-            <button class="btn action" onclick="deleteLast()">DEL</button>
-            
-            <button class="btn" onclick="appendToDisplay('7')">7</button>
-            <button class="btn" onclick="appendToDisplay('8')">8</button>
-            <button class="btn" onclick="appendToDisplay('9')">9</button>
-            <button class="btn action" onclick="appendToDisplay('-')">-</button>
-            
-            <button class="btn" onclick="appendToDisplay('4')">4</button>
-            <button class="btn" onclick="appendToDisplay('5')">5</button>
-            <button class="btn" onclick="appendToDisplay('6')">6</button>
-            <button class="btn action" onclick="appendToDisplay('+')">+</button>
-            
-            <button class="btn" onclick="appendToDisplay('1')">1</button>
-            <button class="btn" onclick="appendToDisplay('2')">2</button>
-            <button class="btn" onclick="appendToDisplay('3')">3</button>
-            <button class="btn blue-main" onclick="calculate()">=</button>
-            
-            <button class="btn" style="grid-column: span 2;" onclick="appendToDisplay('0')">0</button>
-            <button class="btn" onclick="appendToDisplay('.')">.</button>
+            <div class="date-input-group">
+                <label style="font-size: 14px; opacity: 0.7;">To</label><br>
+                <input type="date" id="d2" onchange="calcDateDiff()">
+            </div>
+            <div id="dateResult">Select two dates</div>
+            <button class="reset-date-btn" onclick="resetDates()">Reset Dates</button>
         </div>
     </div>
 
     <script>
-        /* --- JAVASCRIPT LOGIC --- */
-        const display = document.getElementById('display');
-        const sideMenu = document.getElementById('sideMenu');
-        const calcContainer = document.getElementById('calcContainer');
+        let current = '0', previous = '', operator = null, shouldReset = false, activeMode = 'standard';
+        const display = document.getElementById('display'), historyTxt = document.getElementById('history'), binView = document.getElementById('bin-preview');
 
-        document.getElementById('menuToggle').onclick = (e) => {
-            e.stopPropagation();
-            sideMenu.classList.add('active');
-            calcContainer.classList.add('menu-active');
-        };
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-        function closeMenu() {
-            sideMenu.classList.remove('active');
-            calcContainer.classList.remove('menu-active');
+        function changeMode(m) {
+            activeMode = m;
+            document.getElementById('mode-main').classList.toggle('active', m !== 'date');
+            document.getElementById('mode-date').classList.toggle('active', m === 'date');
+            document.getElementById('sci-btns').style.display = (m === 'scientific') ? 'grid' : 'none';
+            binView.style.display = (m === 'programmer') ? 'block' : 'none';
+            clearCalc(); closeSidebar();
         }
 
-        function switchMode(mode) {
-            calcContainer.className = 'calculator-container mode-' + mode;
-            closeMenu();
+        function inputNum(n) {
+            if (current === '0' || shouldReset) { current = n; shouldReset = false; }
+            else { current += n; }
+            updateUI();
         }
 
-        document.addEventListener('click', (e) => {
-            if (sideMenu.classList.contains('active') && !sideMenu.contains(e.target)) {
-                closeMenu();
-            }
-        });
-
-        function runLogic() {
-            let val = parseFloat(display.value);
-            if (isNaN(val)) return;
-            if (calcContainer.classList.contains('mode-programmer')) {
-                display.value = (val >>> 0).toString(2);
-            }
+        function setOp(o) {
+            if (operator && !shouldReset) calculate();
+            previous = current; operator = o; shouldReset = true;
+            historyTxt.innerText = `${previous} ${o}`;
         }
-
-        function appendToDisplay(input) {
-            if (display.value === "0" || isNaN(display.value.charAt(0)) && display.value !== "-") {
-                display.value = input;
-            } else {
-                display.value += input;
-            }
-        }
-
-        function clearDisplay() { display.value = "0"; }
-        function deleteLast() { display.value = display.value.slice(0, -1) || "0"; }
 
         function calculate() {
-            try { display.value = eval(display.value.replace(/×/g, '*')); } 
-            catch { display.value = "Error"; }
+            if (!operator || shouldReset) return;
+            let result, a = parseFloat(previous), b = parseFloat(current);
+            switch(operator) {
+                case '+': result = a + b; break;
+                case '-': result = a - b; break;
+                case '*': result = a * b; break;
+                case '/': result = a / b; break;
+                case '%': result = a % b; break;
+            }
+            historyTxt.innerText = `${previous} ${operator} ${current} =`;
+            current = result.toString(); operator = null; shouldReset = true;
+            updateUI();
         }
 
-        function mathFunction(type) {
-            try {
-                let val = eval(display.value);
-                if (type === 'sin') display.value = Math.sin(val).toFixed(4);
-                if (type === 'cos') display.value = Math.cos(val).toFixed(4);
-                if (type === 'sqrt') display.value = Math.sqrt(val).toFixed(4);
-                if (type === 'log') display.value = Math.log10(val).toFixed(4);
-            } catch { display.value = "Error"; }
+        function sciOp(fn) {
+            let val = parseFloat(current);
+            if(fn === 'sin') current = Math.sin(val).toFixed(4);
+            if(fn === 'cos') current = Math.cos(val).toFixed(4);
+            if(fn === 'tan') current = Math.tan(val).toFixed(4);
+            if(fn === 'sqrt') current = Math.sqrt(val).toString();
+            updateUI();
         }
 
-        document.getElementById('aboutBtn').onclick = () => {
-            alert("DragonCalc v1.0\nBuilt for DragonOS 2026");
-            closeMenu();
-        };
+        function updateUI() {
+            display.innerText = current;
+            if (activeMode === 'programmer') {
+                binView.innerText = "BIN: " + (parseInt(current) || 0).toString(2);
+            }
+        }
+
+        function clearCalc() { current = '0'; previous = ''; operator = null; historyTxt.innerText = ''; binView.innerText = ''; updateUI(); }
+        function backspace() { current = current.length > 1 ? current.slice(0, -1) : '0'; updateUI(); }
+        function toggleNeg() { current = (parseFloat(current) * -1).toString(); updateUI(); }
+
+        function calcDateDiff() {
+            let start = new Date(document.getElementById('d1').value), end = new Date(document.getElementById('d2').value);
+            if (isNaN(start) || isNaN(end)) return;
+            let diff = Math.abs(end - start), days = Math.ceil(diff / 86400000);
+            document.getElementById('dateResult').innerText = `Difference: ${days} days`;
+        }
+        function resetDates() {
+            document.getElementById('d1').value = ""; document.getElementById('d2').value = "";
+            document.getElementById('dateResult').innerText = "Select two dates";
+        }
+
+        document.addEventListener('mousemove', e => {
+            document.querySelectorAll('.reveal-btn').forEach(btn => {
+                let rect = btn.getBoundingClientRect();
+                btn.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+                btn.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+            });
+        });
     </script>
 </body>
 </html>
