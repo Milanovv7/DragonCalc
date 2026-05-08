@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,11 +71,16 @@
             transition: background 0.2s;
         }
         .menu-btn:hover { background: var(--hover-bg); }
-        .menu-btn span { width: 20px; height: 2px; background: white; transition: all 0.2s ease; }
         
-        .menu-btn:hover span:nth-child(1) { width: 14px; }
-        .menu-btn:hover span:nth-child(2) { width: 24px; }
-        .menu-btn:hover span:nth-child(3) { width: 14px; }
+        .menu-btn span { 
+            width: 20px; 
+            height: 2px; 
+            background: white; 
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        /* UNIFORM ANIMATION: All lines shrink to 14px on hover */
+        .menu-btn:hover span { width: 14px; }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -117,7 +123,7 @@
             margin-bottom: 10px;
         }
         #history { font-size: 18px; opacity: 0.6; min-height: 24px; }
-        #display { font-size: 72px; font-weight: 300; margin: 0; }
+        #display { font-size: 72px; font-weight: 300; margin: 0; overflow: hidden; }
         #bin-preview { font-size: 14px; opacity: 0.4; font-family: monospace; height: 18px; margin-top: 5px; }
 
         .mode-container { display: none; flex: 1; flex-direction: column; }
@@ -150,7 +156,7 @@
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            transition: background 0.15s, transform 0.05s;
+            transition: background 0.15s;
         }
         
         .reveal-btn::before {
@@ -167,7 +173,6 @@
             transition: opacity 0.2s;
         }
         .reveal-btn:hover::before { opacity: 1; }
-        .reveal-btn:active { transform: scale(0.98); }
 
         .op-btn { background: var(--btn-bg); font-weight: 400; }
         .eq-btn { background: var(--accent); border: none; color: white !important; }
@@ -304,12 +309,11 @@
             let result, a = parseFloat(previous), b = parseFloat(current);
             switch(operator) {
                 case '+': result = a + b; break;
-                case '-': result = a / b === 0 ? 0 : a - b; break; // Simple safeguard
+                case '-': result = a - b; break;
                 case '*': result = a * b; break;
                 case '/': result = a / b; break;
                 case '%': result = a % b; break;
             }
-            if (operator === '-') result = a - b; // Overriding test
             historyTxt.innerText = `${previous} ${operator} ${current} =`;
             current = result.toString(); operator = null; shouldReset = true;
             updateUI();
