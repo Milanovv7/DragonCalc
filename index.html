@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="IMG_5375.PNG" sizes="any">
     
     <style>
-        /* --- DARK MODE (DEFAULT) --- */
+        /* --- COLOR VARIABLES --- */
         :root {
             --bg-color: #001233;
             --sidebar-bg: rgba(0, 18, 51, 0.6);
@@ -18,9 +18,9 @@
             --hover-bg: rgba(255, 255, 255, 0.1);
             --accent: #005a9e;
             --input-bg: #111;
+            --menu-span-bg: #ffffff;
         }
 
-        /* --- LIGHT MODE AUTO-SWITCH --- */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-color: #f3f3f3;
@@ -31,10 +31,7 @@
                 --hover-bg: rgba(0, 0, 0, 0.05);
                 --accent: #0078d4;
                 --input-bg: #ffffff;
-            }
-            .menu-btn span { background: #333 !important; }
-            .reveal-btn::before {
-                background: radial-gradient(circle, rgba(0,0,0,0.08) 0%, transparent 70%) !important;
+                --menu-span-bg: #333333;
             }
         }
 
@@ -75,12 +72,15 @@
         .menu-btn span { 
             width: 20px; 
             height: 2px; 
-            background: white; 
+            background: var(--menu-span-bg); 
             transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         
-        /* UNIFORM ANIMATION: All lines shrink to 14px on hover */
+        /* Hover Animation */
         .menu-btn:hover span { width: 14px; }
+
+        /* ACTIVE/CLICK Animation: Reset to full width on click */
+        .menu-btn:active span { width: 20px; transition: width 0.05s; }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -105,7 +105,7 @@
         .sidebar-item:hover { background: var(--hover-bg); }
         .sidebar-sep { height: 1px; background: var(--btn-border); margin: 10px 24px; }
 
-        /* --- MAIN APP INTERFACE --- */
+        /* --- MAIN APP --- */
         .main-content {
             flex: 1;
             display: flex;
@@ -173,6 +173,10 @@
             transition: opacity 0.2s;
         }
         .reveal-btn:hover::before { opacity: 1; }
+
+        @media (prefers-color-scheme: light) {
+            .reveal-btn::before { background: radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%); }
+        }
 
         .op-btn { background: var(--btn-bg); font-weight: 400; }
         .eq-btn { background: var(--accent); border: none; color: white !important; }
