@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="IMG_5375.PNG" sizes="any">
     
     <style>
+        /* --- DARK MODE (DEFAULT) --- */
         :root {
             --bg-color: #001233;
             --sidebar-bg: rgba(0, 18, 51, 0.6);
@@ -14,6 +15,26 @@
             --btn-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
             --hover-bg: rgba(255, 255, 255, 0.1);
+            --accent: #005a9e;
+            --input-bg: #111;
+        }
+
+        /* --- LIGHT MODE AUTO-SWITCH --- */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #f3f3f3;
+                --sidebar-bg: rgba(255, 255, 255, 0.7);
+                --btn-bg: rgba(0, 0, 0, 0.03);
+                --btn-border: rgba(0, 0, 0, 0.1);
+                --text-color: #1a1a1a;
+                --hover-bg: rgba(0, 0, 0, 0.05);
+                --accent: #0078d4;
+                --input-bg: #ffffff;
+            }
+            .menu-btn span { background: #333 !important; }
+            .reveal-btn::before {
+                background: radial-gradient(circle, rgba(0,0,0,0.08) 0%, transparent 70%) !important;
+            }
         }
 
         * { box-sizing: border-box; }
@@ -28,6 +49,7 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
         /* --- HAMBURGER MENU --- */
@@ -69,13 +91,13 @@
             display: flex;
             flex-direction: column;
             padding-top: 65px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
         }
         .sidebar.open { left: 0; }
         .sidebar-title { padding: 10px 24px; font-weight: 600; font-size: 20px; margin-bottom: 5px; }
         .sidebar-item { padding: 12px 24px; cursor: pointer; transition: 0.2s; font-size: 15px; }
-        .sidebar-item:hover { background: rgba(255, 255, 255, 0.1); }
-        .sidebar-sep { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 10px 24px; }
+        .sidebar-item:hover { background: var(--hover-bg); }
+        .sidebar-sep { height: 1px; background: var(--btn-border); margin: 10px 24px; }
 
         /* --- MAIN APP INTERFACE --- */
         .main-content {
@@ -95,10 +117,9 @@
             margin-bottom: 10px;
         }
         #history { font-size: 18px; opacity: 0.6; min-height: 24px; }
-        #display { font-size: 72px; font-weight: 300; margin: 0; overflow: hidden; text-overflow: ellipsis; }
+        #display { font-size: 72px; font-weight: 300; margin: 0; }
         #bin-preview { font-size: 14px; opacity: 0.4; font-family: monospace; height: 18px; margin-top: 5px; }
 
-        /* --- FULL SCREEN GRID --- */
         .mode-container { display: none; flex: 1; flex-direction: column; }
         .mode-container.active { display: flex; }
 
@@ -122,14 +143,14 @@
             background: var(--btn-bg);
             border: 1px solid var(--btn-border);
             border-radius: 4px;
-            color: white;
+            color: var(--text-color);
             font-size: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            transition: background 0.15s;
+            transition: background 0.15s, transform 0.05s;
         }
         
         .reveal-btn::before {
@@ -146,11 +167,10 @@
             transition: opacity 0.2s;
         }
         .reveal-btn:hover::before { opacity: 1; }
-        .reveal-btn:active { background: rgba(255, 255, 255, 0.15); }
+        .reveal-btn:active { transform: scale(0.98); }
 
-        .op-btn { background: rgba(255, 255, 255, 0.08); }
-        .eq-btn { background: #005a9e; border: none; }
-        .eq-btn:hover { background: #0067b8; }
+        .op-btn { background: var(--btn-bg); font-weight: 400; }
+        .eq-btn { background: var(--accent); border: none; color: white !important; }
 
         /* --- DATE MODE --- */
         #mode-date.active { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
@@ -158,9 +178,9 @@
         input[type="date"] { 
             width: 280px; 
             padding: 12px; 
-            background: #111; 
-            color: white; 
-            border: 1px solid #333; 
+            background: var(--input-bg); 
+            color: var(--text-color); 
+            border: 1px solid var(--btn-border); 
             border-radius: 4px; 
             font-family: inherit; 
             margin-top: 8px;
@@ -168,9 +188,9 @@
         #dateResult { font-size: 28px; font-weight: 300; margin: 20px 0; }
         .reset-date-btn { 
             padding: 10px 25px; 
-            background: rgba(255,255,255,0.1); 
+            background: var(--btn-bg); 
             border: 1px solid var(--btn-border); 
-            color: white; 
+            color: var(--text-color); 
             border-radius: 4px; 
             cursor: pointer; 
         }
@@ -284,11 +304,12 @@
             let result, a = parseFloat(previous), b = parseFloat(current);
             switch(operator) {
                 case '+': result = a + b; break;
-                case '-': result = a - b; break;
+                case '-': result = a / b === 0 ? 0 : a - b; break; // Simple safeguard
                 case '*': result = a * b; break;
                 case '/': result = a / b; break;
                 case '%': result = a % b; break;
             }
+            if (operator === '-') result = a - b; // Overriding test
             historyTxt.innerText = `${previous} ${operator} ${current} =`;
             current = result.toString(); operator = null; shouldReset = true;
             updateUI();
