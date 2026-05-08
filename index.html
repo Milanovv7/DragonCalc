@@ -67,20 +67,22 @@
             border-radius: 4px;
             transition: background 0.2s;
         }
-        .menu-btn:hover { background: var(--hover-bg); }
         
+        /* Normal state: Lines are 20px */
         .menu-btn span { 
             width: 20px; 
             height: 2px; 
             background: var(--menu-span-bg); 
-            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: width 0.15s ease; 
         }
         
-        /* Hover Animation */
-        .menu-btn:hover span { width: 14px; }
+        /* Hover: Just the background changes, lines stay normal */
+        .menu-btn:hover { background: var(--hover-bg); }
 
-        /* ACTIVE/CLICK Animation: Reset to full width on click */
-        .menu-btn:active span { width: 20px; transition: width 0.05s; }
+        /* Click (Active): Lines shrink to 12px for the animation */
+        .menu-btn:active span { 
+            width: 12px; 
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
