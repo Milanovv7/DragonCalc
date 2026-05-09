@@ -76,7 +76,7 @@
         
         .menu-btn:hover { background: var(--hover-bg); }
 
-        /* Normal on hover, Animates when clicked */
+        /* Clicking the menu button shrinks the lines */
         .menu-btn:active span { 
             width: 12px; 
         }
@@ -155,7 +155,7 @@
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            transition: background 0.15s;
+            transition: background 0.15s, transform 0.1s;
         }
         
         .reveal-btn::before {
@@ -173,7 +173,7 @@
         }
         .reveal-btn:hover::before { opacity: 1; }
         
-        /* Click feedback for all reveal buttons */
+        /* Consistent scaling for all buttons when pressed */
         .reveal-btn:active { transform: scale(0.95); }
 
         @media (prefers-color-scheme: light) {
@@ -309,7 +309,7 @@
         function setOp(o) {
             if (operator && !shouldReset) calculate();
             previous = current; operator = o; shouldReset = true;
-            historyTxt.innerText = `${previous} ${o}`;
+            historyTxt.innerText = previous + " " + o;
         }
 
         function calculate() {
@@ -322,7 +322,7 @@
                 case '/': result = a / b; break;
                 case '%': result = a % b; break;
             }
-            historyTxt.innerText = `${previous} ${operator} ${current} =`;
+            historyTxt.innerText = previous + " " + operator + " " + current + " =";
             current = result.toString(); operator = null; shouldReset = true;
             updateUI();
         }
@@ -351,7 +351,7 @@
             let start = new Date(document.getElementById('d1').value), end = new Date(document.getElementById('d2').value);
             if (isNaN(start) || isNaN(end)) return;
             let diff = Math.abs(end - start), days = Math.ceil(diff / 86400000);
-            document.getElementById('dateResult').innerText = `Difference: ${days} days`;
+            document.getElementById('dateResult').innerText = "Difference: " + days + " days";
         }
         function resetDates() {
             document.getElementById('d1').value = ""; document.getElementById('d2').value = "";
