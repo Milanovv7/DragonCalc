@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,10 +64,9 @@
             justify-content: center;
             gap: 4px;
             border-radius: 4px;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
         
-        /* Normal state: Lines are 20px */
         .menu-btn span { 
             width: 20px; 
             height: 2px; 
@@ -76,13 +74,11 @@
             transition: width 0.15s ease; 
         }
         
-        /* Hover: Just the background changes, lines stay normal */
         .menu-btn:hover { background: var(--hover-bg); }
 
-        /* Click (Active): Lines shrink to 12px for the animation */
-        .menu-btn:active span { 
-            width: 12px; 
-        }
+        /* Animation trigger on click */
+        .menu-btn:active { transform: scale(0.9); }
+        .menu-btn:active span { width: 12px; }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -158,7 +154,7 @@
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            transition: background 0.15s;
+            transition: background 0.15s, transform 0.1s;
         }
         
         .reveal-btn::before {
@@ -176,12 +172,16 @@
         }
         .reveal-btn:hover::before { opacity: 1; }
 
+        /* The fix: Animation when clicking any button */
+        .reveal-btn:active { transform: scale(0.95); background: var(--hover-bg); }
+
         @media (prefers-color-scheme: light) {
             .reveal-btn::before { background: radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%); }
         }
 
         .op-btn { background: var(--btn-bg); font-weight: 400; }
         .eq-btn { background: var(--accent); border: none; color: white !important; }
+        .eq-btn:active { background: var(--accent); opacity: 0.8; }
 
         /* --- DATE MODE --- */
         #mode-date.active { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
@@ -204,7 +204,9 @@
             color: var(--text-color); 
             border-radius: 4px; 
             cursor: pointer; 
+            transition: transform 0.1s;
         }
+        .reset-date-btn:active { transform: scale(0.95); }
 
     </style>
 </head>
