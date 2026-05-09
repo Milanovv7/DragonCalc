@@ -64,7 +64,7 @@
             justify-content: center;
             gap: 4px;
             border-radius: 4px;
-            transition: background 0.2s, transform 0.1s;
+            transition: background 0.2s;
         }
         
         .menu-btn span { 
@@ -76,9 +76,10 @@
         
         .menu-btn:hover { background: var(--hover-bg); }
 
-        /* Animation trigger on click */
-        .menu-btn:active { transform: scale(0.9); }
-        .menu-btn:active span { width: 12px; }
+        /* REVERTED ANIMATION ON CLICK (ACTIVE STATE) */
+        .menu-btn:active span { 
+            width: 12px; 
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -154,7 +155,7 @@
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            transition: background 0.15s, transform 0.1s;
+            transition: background 0.15s;
         }
         
         .reveal-btn::before {
@@ -171,9 +172,9 @@
             transition: opacity 0.2s;
         }
         .reveal-btn:hover::before { opacity: 1; }
-
-        /* The fix: Animation when clicking any button */
-        .reveal-btn:active { transform: scale(0.95); background: var(--hover-bg); }
+        
+        /* Tactical Feedback scaling remains on calculator buttons */
+        .reveal-btn:active { transform: scale(0.95); }
 
         @media (prefers-color-scheme: light) {
             .reveal-btn::before { background: radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%); }
@@ -181,7 +182,6 @@
 
         .op-btn { background: var(--btn-bg); font-weight: 400; }
         .eq-btn { background: var(--accent); border: none; color: white !important; }
-        .eq-btn:active { background: var(--accent); opacity: 0.8; }
 
         /* --- DATE MODE --- */
         #mode-date.active { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
@@ -204,9 +204,7 @@
             color: var(--text-color); 
             border-radius: 4px; 
             cursor: pointer; 
-            transition: transform 0.1s;
         }
-        .reset-date-btn:active { transform: scale(0.95); }
 
     </style>
 </head>
@@ -332,7 +330,7 @@
             if(fn === 'sin') current = Math.sin(val).toFixed(4);
             if(fn === 'cos') current = Math.cos(val).toFixed(4);
             if(fn === 'tan') current = Math.tan(val).toFixed(4);
-            if(fn === 'sqrt') current = Math.sqrt(val).toString();
+            if(fn === 'sqrt) current = Math.sqrt(val).toString();
             updateUI();
         }
 
