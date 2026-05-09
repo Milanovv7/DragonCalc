@@ -76,7 +76,7 @@
         
         .menu-btn:hover { background: var(--hover-bg); }
 
-        /* REVERTED ANIMATION ON CLICK (ACTIVE STATE) */
+        /* Normal on hover, Animates when clicked */
         .menu-btn:active span { 
             width: 12px; 
         }
@@ -173,7 +173,7 @@
         }
         .reveal-btn:hover::before { opacity: 1; }
         
-        /* Tactical Feedback scaling remains on calculator buttons */
+        /* Click feedback for all reveal buttons */
         .reveal-btn:active { transform: scale(0.95); }
 
         @media (prefers-color-scheme: light) {
@@ -204,7 +204,9 @@
             color: var(--text-color); 
             border-radius: 4px; 
             cursor: pointer; 
+            transition: transform 0.1s;
         }
+        .reset-date-btn:active { transform: scale(0.95); }
 
     </style>
 </head>
@@ -330,7 +332,7 @@
             if(fn === 'sin') current = Math.sin(val).toFixed(4);
             if(fn === 'cos') current = Math.cos(val).toFixed(4);
             if(fn === 'tan') current = Math.tan(val).toFixed(4);
-            if(fn === 'sqrt) current = Math.sqrt(val).toString();
+            if(fn === 'sqrt') current = Math.sqrt(val).toString();
             updateUI();
         }
 
